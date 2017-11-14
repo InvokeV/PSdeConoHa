@@ -1,5 +1,5 @@
 $apiUser = ""
-$password = "#$%"
+$password = ""
 $tenantId = ""
 $script:token = ""  
 
