@@ -1,7 +1,7 @@
-$apiUser = ""
-$password = ""
-$tenantId = ""
-$script:token = ""  
+$apiUser = "gncu12345678" 
+$password = "paSSword123456#$%" 
+$tenantId = "487727e3921d44e3bfe7ebb337bf085e" 
+$script:token = "" 
 
 Function Get-cTokenHeader(){
     $body = '{"auth":{"passwordCredentials":{"username":"' + $apiUser + '","password":"' + $password+'"},"tenantId":"' + $tenantId+'"}}'
