@@ -23,7 +23,21 @@ Function Get-cFlavor($flavorId){
     $tokenHeader = Get-cTokenHeader
     $requestUrl = "https://compute.tyo1.conoha.io/v2/$tenantId/flavors/$flavorId"
     $result = Invoke-RestMethod $requestUrl -Headers $tokenHeader -Method GET
-    Return $result.flavor
+    If($flavorId -eq $null){
+        $flavors = $result.flavors
+        $objAry = @()
+        ForEach($flavor in $flavors){
+            $id = $flavor.id
+            $name = $flavor.name
+            $objPs = New-Object PSCustomObject
+            $objPs | Add-Member -NotePropertyMembers @{ID = $id}
+            $objPs | Add-Member -NotePropertyMembers @{Name = $name}
+            $objAry += $objPs
+        }
+        Return $objAry
+    }Else{
+        Return $result.flavor
+    }
 }
 
 Function Get-cVM(){  
@@ -107,4 +121,38 @@ Function Stop-cVM(){
         $body = '{"os-stop": null}'
         Invoke-RestMethod $requestUrl -Headers $tokenHeader -Method POST -Body $body
     }    
+}
+
+Function Get-cImage(){    
+    $tokenHeader = Get-cTokenHeader
+    $requestUrl = "https://compute.tyo1.conoha.io/v2/$tenantId/images/detail"
+    $result = Invoke-RestMethod $requestUrl -Headers $tokenHeader -Method GET
+    $images = $result.images
+    $objAry = @()
+    ForEach($image in $images){
+        $id = $image.id
+        $name = $image.name
+        $objPs = New-Object PSCustomObject
+        $objPs | Add-Member -NotePropertyMembers @{ID = $id}
+        $objPs | Add-Member -NotePropertyMembers @{Name = $name}
+        $objAry += $objPs       
+    }
+    Return $objAry
+}
+
+Function New-cVM($imageId, $flavorId, $adminPass){
+    $tokenHeader = Get-cTokenHeader
+    $requestUrl = "https://compute.tyo1.conoha.io/v2/$tenantId/servers"   
+    $body =     
+@"
+    {
+        "server": {
+            "imageRef" : "$imageId", 
+            "flavorRef" : "$flavorId", 
+            "adminPass" : "$adminPass"
+        }
+    }    
+"@
+    $result = Invoke-RestMethod $requestUrl -Headers $tokenHeader -Method POST -Body $body
+    Return $result.server.id
 }
