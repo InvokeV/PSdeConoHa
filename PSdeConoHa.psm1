@@ -140,7 +140,7 @@ Function Get-cImage(){
     Return $objAry
 }
 
-Function New-cVM($imageId, $flavorId, $adminPass){
+Function New-cVM($name, $imageId, $flavorId, $adminPass){
     $tokenHeader = Get-cTokenHeader
     $requestUrl = "https://compute.tyo1.conoha.io/v2/$tenantId/servers"   
     $body =     
@@ -149,10 +149,13 @@ Function New-cVM($imageId, $flavorId, $adminPass){
         "server": {
             "imageRef" : "$imageId", 
             "flavorRef" : "$flavorId", 
-            "adminPass" : "$adminPass"
+            "adminPass" : "$adminPass",
+            "metadata": {
+                "instance_name_tag": "$name"
+            }
         }
     }    
 "@
     $result = Invoke-RestMethod $requestUrl -Headers $tokenHeader -Method POST -Body $body
-    Return $result.server.id
+    Return $name
 }
